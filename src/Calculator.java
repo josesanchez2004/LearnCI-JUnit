@@ -12,6 +12,10 @@ public class Calculator {
 	 * @throws ArithmeticException is b is 0;
 	 */
 	public double action(double a, double b) {
+
+		if(b == 0){
+			throw new ArithmeticException("Division by zero is not allowed");
+		}
 		double result = 0;
 		if (a<b) {
 			result = a * b;
