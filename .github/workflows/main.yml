@@ -1,25 +1,14 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
-on: [push] 
+on: [push]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      # Runs a single command using the runners shell
-      - name: Running Tests 
-        run: echo Hello, world!
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -27,6 +16,17 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Build and run tests with Maven
+      - name: Download JUnit 5 Standalone JAR
         run: |
-          mvn clean test
+          mkdir lib
+          curl -L -o lib/junit-platform-console-standalone.jar https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.11.4/junit-platform-console-standalone-1.11.4.jar
+
+      - name: Compile Java Code and Tests
+        run: |
+          mkdir bin
+          javac -d bin -cp lib/junit-platform-console-standalone.jar src/Calculator.java test/*.java
+
+      - name: Run JUnit Tests
+        run: |
+          java -jar lib/junit-platform-console-standalone.jar --class-path bin --scan-class-path
+
